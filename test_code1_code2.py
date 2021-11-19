@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install -U nutter chispa
+# MAGIC %pip install -U nutter chispa coverage
 
 # COMMAND ----------
 
@@ -15,6 +15,8 @@
 from runtime.nutterfixture import NutterFixture, tag
 # https://github.com/MrPowers/chispa
 from chispa.dataframe_comparer import *
+# https://coverage.readthedocs.io/en/6.1.2/api.html#api
+import coverage
 
 class Test1Fixture(NutterFixture):
   def __init__(self):
@@ -51,7 +53,15 @@ class Test1Fixture(NutterFixture):
 
 # COMMAND ----------
 
+cov = coverage.Coverage()
+cov.start(source=".")
+
 result = Test1Fixture().execute_tests()
+
+cov.stop()
+cov.save()
+cov.html_report(directory="/Users/repajta@microsoft.com/coverage-report")
+
 print(result.to_string())
 is_job = dbutils.notebook.entry_point.getDbutils().notebook().getContext().currentRunId().isDefined()
 if is_job:
